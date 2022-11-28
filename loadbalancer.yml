@@ -1,0 +1,20 @@
+---
+- hosts: loadbalancer
+  become: true
+  tasks:
+    - name: install nginx
+      apt: name=nginx state=present update_cache=yes
+    - name: start nginx
+      service: name=nginx state=started enabled=yes
+    - name: configure nginx
+      template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/test mode=0644
+      notify: restart nginx
+    - name: delete old link
+      file: path=/etc/nginx/sites-enabled/default state=absent
+      notify: restart nginx
+    - name: activate test site
+      file: src=/etc/nginx/sites-available/test dest=/etc/nginx/sites-enabled/test state=link
+      notify: restart nginx
+  handlers:
+    - name: restart nginx
+      service: name=nginx state=restarted

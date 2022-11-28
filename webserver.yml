@@ -1,0 +1,30 @@
+---
+- hosts: webserver
+  become: true
+  tasks:
+    - name: install apache
+      apt: name=apache2 state=present update_cache=yes
+    - name: deleted index.html
+      file: path=/var/www/html/index.html state=absent
+      notify: restart apache2
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted
+- hosts: app01
+  become: true
+  tasks:
+    - name: set up index.html for first web server
+      copy: content="<html><header><title>Welcome to Server 1</title></header><body>Hello from Server 1!</body></html>" dest=/var/www/html/index.html mode=0644
+      notify: restart apache2
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted
+- hosts: app02
+  become: true
+  tasks:
+    - name: set up index.html for second web server
+      copy: content="<html><header><title>Welcome to Server 2</title></header><body>Hello from Server 2!</body></html>" dest=/var/www/html/index.html mode=0644
+      notify: restart apache2
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted

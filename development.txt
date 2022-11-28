@@ -1,0 +1,13 @@
+[controller]
+control ansible_connection=local
+[loadbalancer]
+balancer ansible_user=ubuntu
+balancer ansible_host=34.193.106.233
+[webserver]
+app01 ansible_user=ubuntu
+app01 ansible_host=44.213.9.134
+app02 ansible_user=ubuntu
+app02 ansible_host=3.85.178.135
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
